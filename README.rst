@@ -5,7 +5,7 @@ Abstract DC Drive
 Description
 ***********
 
-This repository is project of control system for DC motor using PID regulator.
+This repository an example of controling DC drive `Abstract-DC-Drive <https://github.com/SlavaLikhohub/Abstract-DC-Drive>`_.
 It is based on `Abstract-STM32Fx <https://github.com/SlavaLikhohub/Abstract-STM32Fx>`_ library.
 
 Tested using the **STM32F103 Bluepill**. 
@@ -39,13 +39,8 @@ How to start
    
 .. code-block:: shell-session
       
-   make DEVICE=<device> TARGET=<example> PROFILE=release tidy all
+   make DEVICE=<device> TARGET=<example> PROFILE=release LOG={0,1} tidy all
 
 where ``<device>`` is ``stm32f407vgt6`` or ``stm32f103c8t6``, ``<example>`` is a file from ``src dir`` without extantion (i.e. blinky_stm32f4)
 
-Documentation
-*************
-
-.. code-block:: shell-session
-    make documentation
 

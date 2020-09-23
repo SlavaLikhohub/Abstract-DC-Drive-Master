@@ -1,10 +1,11 @@
 # The main (project top) file without .c
 TARGET = abstract_DC_drive_Master
 # Device is required for libopencm3. Based on this will choose platform of abstractSTM32
-DEVICE ?= stm32f103c8t6
+DEVICE ?= stm32f407vgt6
 # All source files go here:
 SRCS = $(TARGET).c
-SRCS += 
+SRCS += can.c
+SRCS += usart_log.c
 
 # Libraries as submodules
 LIBS_SUBM := opencm3 fifo
