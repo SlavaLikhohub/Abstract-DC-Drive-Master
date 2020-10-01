@@ -87,6 +87,11 @@ static struct abst_can_filter_32_bit LOG_TEMPERATURE_INFO =
     .enable = true  /* Enable Filter */
 };
 
+/**
+ * Initialze CAN.
+ * 
+ * :return: true if success, false otherwise
+ */
 bool can_bus_init(void)
 {  
     abst_gpio_init(&can_RX);
@@ -133,9 +138,12 @@ bool can_bus_init(void)
     return true;
 }
 
-// Interrupt handler
+/**
+ * Interrupt handler to work with receiving CAN messages
+ */
 void can1_rx0_isr(void)
 {
+//     abst_log("##############\n");
 //     abst_log("\nCAN interrupt\n");
 //     abst_logf("Fifo pending: %i\n", abst_can_get_fifo_pending(1, 0));
 
@@ -181,4 +189,75 @@ void can1_rx0_isr(void)
         int32_t *temp = data;
         log_set_temperature(*temp);
     }
+}
+
+/**
+ * Send command via CAN to set pid coefficient
+ * 
+ * :param type: Type of the pid :c:type:`pid_types`.
+ * :param field: Field to set :c:type:`pid_fields`.
+ * :param value: Value to set. 
+ */
+void set_pid_coef(enum pid_types type, enum pid_fields field, int32_t value)
+{
+    struct pid_settings_msg set_msg = {
+        .pid_type = type,
+        .pid_field = field,
+        .value = value,
+    };
+    can1_send(CAN_SETUP_COMMANDS_ID, sizeof(set_msg), &set_msg);
+}
+
+/**
+ * Send command via CAN to save pid settings to FLASH
+ * 
+ * :param type: Type of the pid :c:type:`pid_types`.
+ */
+void save_pid_to_flash(enum pid_types type)
+{
+    const uint8_t type_byte = type;
+    can1_send(CAN_SETUP_COMMANDS_ID, 1, &type_byte);
+}
+
+/**
+ * Send command via CAN to set desired value
+ * 
+ * :param type: Type of the pid :c:type:`pid_types`.
+ * :param value: Value to set
+ */
+void set_desired_value(enum pid_types type, int32_t value)
+{
+    struct pid_des_value_msg des_msg = {
+        .pid_type = type,
+        .value = value,
+    };
+    can1_send(CAN_SET_DES_VALUE_COMMANDS_ID, sizeof(des_msg), &des_msg);
+}
+
+/**
+ * Send command via CAN to request log
+ * 
+ * :param log_type: Type of the pid :c:type:`log_types`.
+ */
+void request_log(uint8_t log_type)
+{
+    can1_send(CAN_LOG_REQUEST_COMMANDS_ID, sizeof(log_type), &log_type);
+}
+
+/**
+ * Send message via CAN
+ * 
+ * :param id: Id of a message
+ * :param N: Size of data array (number of bytes)
+ * :param data: array of data
+ */
+void can1_send(uint32_t id, size_t N, uint8_t* data)
+{
+    can_transmit(CAN1,
+                id,        /* (EX/ST)ID: CAN ID */
+                false,     /* IDE: CAN ID extended? */
+                false,     /* RTR: Request transmit? */
+                N,         /* DLC: Data length */
+                data);
+    abst_delay_ms(200);
 }

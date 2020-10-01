@@ -27,9 +27,9 @@ struct pid_settings
 enum pid_types 
 {
     /** None, disable */
-    NONE = -1,
+    NONE = 0,
     /** Speed control */
-    SPEED_PID = 0,
+    SPEED_PID = 1,
     /** Current control */
     CURRENT_PID,
     /** Position control */
@@ -87,6 +87,8 @@ enum log_types
     LOG_CURRENT,
     /** Temperature */
     LOG_TEMPERATURE,
+    /** Voltage */ 
+    LOG_VOLTAGE,
 };
 
 #endif // _COMMON_DEFS_H_
